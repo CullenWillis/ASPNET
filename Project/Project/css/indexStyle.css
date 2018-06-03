@@ -77,3 +77,25 @@ body
 	/* This centers our sketch vertically. */
 	align-items: center;
 }
+
+#text-V1
+{
+    padding-top: 10px;
+}
+
+#text-V2 {
+    padding-top: 5px;
+}
+
+#text-V3 {
+    padding-top: 5px;
+}
+
+.Image1 {
+    padding-top: 10%;
+}
+
+.resultLabel 
+{
+    padding-top: 5px;
+}

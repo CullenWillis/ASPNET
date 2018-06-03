@@ -8,111 +8,141 @@ namespace Project.cs
 {
     public class Map
     {
-        private Stack<Triangles> triangles;
+        public Stack<Triangles> triangles;
 
-        private double[,] grid;
+        private readonly int columns;
+        private readonly int rows;
+        private readonly int resolution;
 
-        private int columns;
-        private int rows;
-        private int resolution;
+        private int IDCount = 1;
 
+        // Constructor
         public Map()
         {
-            grid = null;
+            columns = 600;
+            rows = 600;
+            resolution = 100;
 
-            columns = 60;
-            rows = 60;
-            resolution = 10;
-
-            makeGrid();
-
-            populateTriangles();
-
-            if (grid != null)
-                System.Diagnostics.Debug.WriteLine("Grid have been intialized.");
-
-            if(triangles != null)
-            {
-                System.Diagnostics.Debug.WriteLine("Triangles have been intialized.");
-            }
+            PopulateTriangles();
         }
 
-        private double[,] make2DArray(int cols, int rows)
-        {
-            double[,] array = new double[cols, rows];
-
-            for (int x = 0; x < cols; x++)
-            {
-                for (int y = 0; y < rows; y++)
-                {
-                    array[x, y] = y;
-                }
-            }
-
-            return array;
-        }
-
-        private void makeGrid()
-        {
-            Random rnd = new Random();
-            rows = rows / resolution;
-            columns = columns / resolution;
-
-            grid = make2DArray(rows, columns);
-
-            for (int x = 0; x < rows; x++)
-            {
-                for (int y = 0; y < columns; y++)
-                {
-                    double random = rnd.Next(2);
-                    double floor = Math.Floor(random);
-
-                    grid[x, y] = floor;
-                }
-            }
-        }
-
-        private void populateTriangles()
+        // Fill the stack with Triangle objects
+        private void PopulateTriangles()
         {
             triangles = new Stack<Triangles>();
-            
+
             Point p1;
             Point p2;
             Point p3;
 
-            for (int i = 0; i < rows; i++)
+            // Loop through gird and plot 3 coordinates to make triangles
+            for (int y = 0; y < columns; y++)
             {
-                for (int j = 0; j < columns; j++)
+                for (int x = 0; x < rows; x++)
                 {
-                    p1 = new Point(i * resolution, j * resolution);
-                    p2 = new Point((i + 1) * resolution, (j + 1) * resolution);
-                    p3 = new Point(i * resolution, (j + 1) * resolution);
+                    // Get points
+                    p1 = new Point(x * resolution, (y + 1) * resolution);
+                    p2 = new Point(x * resolution, y * resolution);
+                    p3 = new Point((x + 1) * resolution, (y + 1) * resolution);
 
-                    
-                    triangles.Push(getStack(p1, p2, p3));
+                    // Fill Stack with points
+                    triangles.Push(GetStack(y, 1, p1, p2, p3));
 
-                    p2 = new Point((i + 1) * resolution, j * resolution);
-                    p3 = new Point((i + 1) * resolution, (j + 1) * resolution);
+                    // Get points
+                    p1 = new Point((x + 1) * resolution, y * resolution);
 
-                    triangles.Push(getStack(p1, p2, p3));
+                    // Fill Stack with points
+                    triangles.Push(GetStack(y, 2, p1, p2, p3));
                 }
             }
         }
 
-        private Triangles getStack(Point p1, Point p2, Point p3)
+        // create and return a new Triangle object
+        private Triangles GetStack(int y, int half, Point p1, Point p2, Point p3)
         {
-            Triangles temp = new Triangles();
-
-            temp.point1 = p1;
-            temp.point2 = p2;
-            temp.point3 = p3;
+            // Make temp of triangles and fill necessary data
+            Triangles temp = new Triangles
+            {
+                ID = GetID(y, half),
+                point1 = p1,
+                point2 = p2,
+                point3 = p3
+            };
 
             return temp;
         }
 
-        public void getLocation()
+        // Calculate the ID based of y axis and which half the triangle is on
+        private string GetID(int y, int half)
         {
+            string ID = "";
 
+            // Get letter based on Y value
+            if (y == 0)
+            {
+                ID = "A";
+            }
+            else if (y == 1)
+            {
+                ID = "B";
+            }
+            else if (y == 2)
+            {
+                ID = "C";
+            }
+            else if (y == 3)
+            {
+                ID = "D";
+            }
+            else if (y == 4)
+            {
+                ID = "E";
+            }
+            else if (y == 5)
+            {
+                ID = "F";
+            }
+
+            // Concatenate count onto String
+            ID += IDCount;
+
+            // If count reaches max limit (12) reset, else increment by 1
+            if(IDCount == 12)
+            {
+                IDCount = 1;
+            }
+            else
+            {
+                IDCount++;
+            }
+
+            return ID;
+        }
+        
+        // Calculate the coordinates of the triangle
+        public string GetLocation(Point v1, Point v2, Point v3)
+        {
+            string location = "";
+
+            // Loop through triangles
+            foreach(Triangles t in triangles)
+            {
+                // If coordinates match create string defining where the triangle is
+                if (t.point1 == v1 && t.point2 == v2 && t.point3 == v3)
+                {
+                    int y = (t.point3.X / resolution);
+                    int x = (t.point3.Y / resolution);
+                    location = "This triangle is in row: " + x + ", column: " + y + " and is titled '" + t.ID + "'";
+                }
+            }
+
+            // if coordinates don't match produce error string
+            if(location == "")
+            {
+                location = "Invalid location, please try again.";
+            }
+
+            return location;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Project.cs
 {
     public class Triangles
     {
-        public string ID { get; }
+        public string ID { get; set; }
 
         public Point point1 { get; set; }
         public Point point2 { get; set; }
